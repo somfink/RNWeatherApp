@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   rootContainer: {
@@ -41,5 +41,8 @@ export const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
+  },
+  marginBottom: {
+    marginBottom: 20,
   },
 });

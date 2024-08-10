@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
@@ -15,7 +15,8 @@ import { getCityCords } from '../../services/weatherService';
 import { GetWeatherDataDto } from '../../types';
 import { kelvinToCelsiusConverter } from '../../utils/kelvinToCelsiusConverter';
 import { styles } from './styles';
-import { AxiosError } from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AsyncStorageKey } from '../../types/enums';
 
 const Home = () => {
   const [city, setCity] = useState('');
@@ -41,6 +42,32 @@ const Home = () => {
       }
     }
   };
+
+  const handleSaveFavoriteCity = async () => {
+    try {
+      await AsyncStorage.setItem(AsyncStorageKey.FavoriteCity, city);
+      Alert.alert('Input Error', 'Successfully added city to favorite!');
+    } catch (error) {
+      Alert.alert('Input Error', 'Cannot add city to favorite.');
+    }
+  };
+
+  useEffect(() => {
+    const handleCheckFavoriteCity = async () => {
+      const favoriteCity = await AsyncStorage.getItem(
+        AsyncStorageKey.FavoriteCity,
+      );
+
+      if (!favoriteCity) {
+        return;
+      }
+      const weatherData = await getCityCords(favoriteCity);
+      setWeather(weatherData);
+      setCity(favoriteCity);
+    };
+
+    handleCheckFavoriteCity();
+  }, []);
 
   return (
     <SafeAreaView style={styles.rootContainer}>
@@ -76,9 +103,14 @@ const Home = () => {
             <Text style={styles.weatherText}>
               Humidity: {weather.main.humidity}%
             </Text>
-            <Text style={styles.weatherText}>
+            <Text style={[styles.weatherText, styles.marginBottom]}>
               Wind Speed: {weather.wind.speed} m/s
             </Text>
+            <Button
+              title="Add City to Favorite"
+              onPress={handleSaveFavoriteCity}
+              color={'red'}
+            />
           </View>
         )}
       </View>
