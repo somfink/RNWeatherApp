@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Button,
+  Image,
   SafeAreaView,
   StatusBar,
-  StyleSheet,
   Text,
   TextInput,
   useColorScheme,
@@ -12,10 +12,14 @@ import {
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { getCityCords } from '../../services/weatherService';
+import { GetWeatherDataDto } from '../../types';
+import { kelvinToCelsiusConverter } from '../../utils/kelvinToCelsiusConverter';
+import { styles } from './styles';
+import { AxiosError } from 'axios';
 
 const Home = () => {
   const [city, setCity] = useState('');
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState<GetWeatherDataDto | null>(null);
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -29,24 +33,17 @@ const Home = () => {
     }
 
     try {
-      const weatherData = await getCityCords('Kielce');
+      const weatherData = await getCityCords(city);
       setWeather(weatherData);
     } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error;
+      if (error instanceof Error) {
+        Alert.alert('Input Error', 'Please enter a valid city name.');
+      }
     }
   };
 
-  // useEffect(() => {
-  //   const fetchWeatherData = async () => {
-  //     const dupa = await getCityCords('Kielce');
-  //     console.log(dupa);
-  //   };
-  //   fetchWeatherData();
-  // }, []);
-
   return (
-    <SafeAreaView style={{ ...backgroundStyle, ...styles.rootContainer }}>
+    <SafeAreaView style={styles.rootContainer}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
@@ -66,8 +63,12 @@ const Home = () => {
         </View>
         {weather && (
           <View style={styles.weatherContainer}>
+            <Image
+              src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
+              style={styles.image}
+            />
             <Text style={styles.weatherText}>
-              Temperature: {weather.main.temp}°C
+              Temperature: {kelvinToCelsiusConverter(weather.main.temp)}°C
             </Text>
             <Text style={styles.weatherText}>
               Condition: {weather.weather[0].description}
@@ -84,44 +85,5 @@ const Home = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  rootContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  searchContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  description: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 20,
-    color: '#000',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    marginVertical: 20,
-    width: '100%',
-  },
-  weatherContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  weatherText: {
-    fontSize: 16,
-    marginVertical: 2,
-  },
-});
 
 export default Home;
