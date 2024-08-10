@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { GetWeather } from '../types';
+import Config from 'react-native-config';
 
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+const WEATHER_API_KEY = Config.WEATHER_API_KEY;
 const BASE_URL = process.env.BASE_URL;
 
 export const getCityCords = async (city: string) => {
