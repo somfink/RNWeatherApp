@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Alert,
   Button,
@@ -11,21 +11,22 @@ import {
   View,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { getCityCords } from '../../services/weatherService';
+import { getTodayWeather } from '../../services/weatherService';
 import { GetWeatherDataDto } from '../../types';
 import { kelvinToCelsiusConverter } from '../../utils/kelvinToCelsiusConverter';
 import { styles } from './styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AsyncStorageKey } from '../../types/enums';
+import { useWeatherStore } from '../../store/weatherStore';
+import MainLayout from '../../layouts/MainLayout';
 
 const Home = () => {
-  const [city, setCity] = useState('');
-  const [weather, setWeather] = useState<GetWeatherDataDto | null>(null);
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const { city, weather, setCityName, setWeather } = useWeatherStore(state => ({
+    city: state.city,
+    weather: state.weather,
+    setWeather: state.setWeather,
+    setCityName: state.setCityName,
+  }));
 
   const handleSearch = async () => {
     if (city.trim() === '') {
@@ -34,7 +35,7 @@ const Home = () => {
     }
 
     try {
-      const weatherData = await getCityCords(city);
+      const weatherData = await getTodayWeather(city);
       setWeather(weatherData);
     } catch (error) {
       if (error instanceof Error) {
@@ -61,20 +62,16 @@ const Home = () => {
       if (!favoriteCity) {
         return;
       }
-      const weatherData = await getCityCords(favoriteCity);
+      const weatherData = await getTodayWeather(favoriteCity);
       setWeather(weatherData);
-      setCity(favoriteCity);
+      setCityName(favoriteCity);
     };
 
     handleCheckFavoriteCity();
   }, []);
 
   return (
-    <SafeAreaView style={styles.rootContainer}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <MainLayout>
       <View style={styles.container}>
         <Text style={styles.description}>
           Enter the name of a city below to fetch the current weather data.
@@ -84,7 +81,7 @@ const Home = () => {
             style={styles.input}
             placeholder="Enter city name"
             value={city}
-            onChangeText={setCity}
+            onChangeText={setCityName}
           />
           <Button title="Get Weather" onPress={handleSearch} color={'red'} />
         </View>
@@ -114,7 +111,7 @@ const Home = () => {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </MainLayout>
   );
 };
 

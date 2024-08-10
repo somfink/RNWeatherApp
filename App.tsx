@@ -6,6 +6,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Home from './screens/Home';
 import { StyleSheet } from 'react-native';
+import WeatherDetails from './screens/WeatherDetails';
+import { ScreenName } from './types/enums';
 
 const App = () => {
   useEffect(() => {
@@ -19,7 +21,7 @@ const App = () => {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
-            if (route.name === 'Home') {
+            if (route.name === ScreenName.Home) {
               return (
                 <MaterialIcons
                   name={'location-pin'}
@@ -28,7 +30,7 @@ const App = () => {
                 />
               );
             }
-            if (route.name === 'Weather') {
+            if (route.name === ScreenName.WeatherDetails) {
               return (
                 <MaterialCommunityIcons
                   name={'weather-partly-cloudy'}
@@ -43,12 +45,14 @@ const App = () => {
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
         })}>
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Weather" component={Home} />
+        <Tab.Screen name={ScreenName.Home} component={Home} />
+        <Tab.Screen
+          name={ScreenName.WeatherDetails}
+          component={WeatherDetails}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
 };
 
 export default App;
-
