@@ -2,7 +2,10 @@ import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from 'react-native-splash-screen';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Home from './screens/Home';
+import { StyleSheet } from 'react-native';
 
 const App = () => {
   useEffect(() => {
@@ -15,24 +18,37 @@ const App = () => {
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
+          tabBarIcon: ({ color, size }) => {
             if (route.name === 'Home') {
-              return <Ionicons name={'home'} color={color} size={size} />;
+              return (
+                <MaterialIcons
+                  name={'location-pin'}
+                  color={color}
+                  size={size}
+                />
+              );
             }
-            if (route.name === 'City') {
-              return <Ionicons name={'add'} color={color} size={size} />;
+            if (route.name === 'Weather') {
+              return (
+                <MaterialCommunityIcons
+                  name={'weather-partly-cloudy'}
+                  color={color}
+                  size={size}
+                />
+              );
             }
-            console.log(route.name);
+
             return null;
           },
           tabBarActiveTintColor: 'tomato',
           tabBarInactiveTintColor: 'gray',
         })}>
         <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="City" component={Home} />
+        <Tab.Screen name="Weather" component={Home} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 };
 
 export default App;
+
