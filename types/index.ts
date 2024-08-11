@@ -1,16 +1,16 @@
-type CoordDto = {
+type GetCoordsDto = {
   lon: number;
   lat: number;
 };
 
-type WeatherDto = {
+type GetWeatherDto = {
   id: number;
   main: string;
   description: string;
   icon: string;
 };
 
-type WeatherDetailsDto = {
+type GetWeatherDetailsDto = {
   temp: number;
   feels_like: number;
   temp_min: number;
@@ -21,22 +21,22 @@ type WeatherDetailsDto = {
   grnd_level: number;
 };
 
-type WindDto = {
+type GetWindDto = {
   speed: number;
   deg: number;
   gust: number;
 };
 
-type RainDto = {
+type GetRainDto = {
   '1h': number;
   '3h': number;
 };
 
-type CloudsDto = {
+type GetCloudsDto = {
   all: number;
 };
 
-type SysDto = {
+type GetSysWeatherDto = {
   type: number;
   id: number;
   country: string;
@@ -45,27 +45,61 @@ type SysDto = {
 };
 
 export type GetWeatherDataDto = {
-  coord: CoordDto;
-  weather: WeatherDto[];
+  coord: GetCoordsDto;
+  weather: GetWeatherDto[];
   base: string;
-  main: WeatherDetailsDto;
+  main: GetWeatherDetailsDto;
   visibility: number;
-  wind: WindDto;
-  rain: RainDto;
-  clouds: CloudsDto;
+  wind: GetWindDto;
+  rain: GetRainDto;
+  clouds: GetCloudsDto;
   dt: number;
-  sys: SysDto;
+  sys: GetSysWeatherDto;
   timezone: number;
   id: number;
   name: string;
   cod: number;
 };
 
-export type GetCoordsDto = {
+export type GetCoordsDataDto = {
   country: string;
   lat: string;
   local_names: Record<string, string>;
   lon: number;
   name: string;
   state: string;
+};
+
+type GetSysForecastDto = {
+  pod: 'd' | 'n';
+};
+
+export type GetForecastListDto = {
+  dt: number;
+  main: GetWeatherDetailsDto & {
+    temp_kf: -1.11;
+  };
+  weather: GetWeatherDto[];
+  clouds: GetCloudsDto;
+  wind: GetWindDto;
+  visibility: number;
+  pop: number;
+  rain: GetRainDto;
+  sys: GetSysForecastDto;
+  dt_txt: string;
+};
+
+type GetCityForecastDto = Omit<GetSysWeatherDto, 'type'> & {
+  name: string;
+  coord: GetCoordsDto;
+  population: number;
+  timezone: number;
+};
+
+export type GetForecastDataDto = {
+  cod: string;
+  massage: number;
+  cnt: number;
+  list: GetForecastListDto[];
+  city: GetCityForecastDto;
 };
